@@ -2,6 +2,8 @@
 from flask import Flask, abort
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal
 import os
+import classify
+from urllib2 import Request, urlopen, URLError, HTTPError
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,12 +23,47 @@ class ImageAPI(Resource):
     def post(self):
         args = self.reqparse.parse_args()
         url = args['url']
-        return os.popen('python ~/Downloads/tensorflow/tensorflow/models/image/imagenet/classify_image.py').read()
-        # return url
-        # return {'task': marshal(task, task_fields)}, 201
+        # Read the image and save it
+        path = read_image_from_url(url)
+        # Run the classifier on the image
+        results = classify.run(path)
+        # Remove the image after analyzing
+        remove_image(path)
+        return results
 
 
 api.add_resource(ImageAPI, '/tensor/api/v1.0/images', endpoint='images')
+
+
+def remove_image(path):
+    try:
+        os.remove(path)
+    except OSError, e:
+        print "OS Error:", e.message, path
+
+
+# Read the specified url for a jpg image
+def read_image_from_url(url):
+    # Get the image filename (string after the last /)
+    filename = url.split('/')[-1]
+    req = Request(url)
+    # Open the url
+    try:
+        f = urlopen(req)
+        print "Downloading " + url
+        # Open our local file for writing
+        local_file = open('/home/kevin/Downloads/' + filename, "wb")
+        # Write to our local file
+        local_file.write(f.read())
+        local_file.close()
+        return '/home/kevin/Downloads/' + filename
+
+        # handle errors
+    except HTTPError, e:
+        print "HTTP Error:", e.code, url
+    except URLError, e:
+        print "URL Error:", e.reason, url
+
 
 if __name__ == '__main__':
     app.run(debug=True)
