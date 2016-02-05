@@ -30,14 +30,15 @@ to use this script to perform image recognition.
 
 https://tensorflow.org/tutorials/image_recognition/
 """
-# !flask/bin/python
+# !/usr/bin/python2
+
+import pprint as pp
 import os.path
 import re
 import sys
 import tarfile
 
 # pylint: disable=unused-import,g-bad-import-order
-import tensorflow.python.platform
 from moves import urllib
 import numpy as np
 import tensorflow as tf
@@ -54,10 +55,10 @@ FLAGS = tf.app.flags.FLAGS
 # imagenet_2012_challenge_label_map_proto.pbtxt:
 #   Text representation of a protocol buffer mapping a label to synset ID.
 tf.app.flags.DEFINE_string(
-    'model_dir', '/tmp/imagenet',
-    """Path to classify_image_graph_def.pb, """
-    """imagenet_synset_to_human_label_map.txt, and """
-    """imagenet_2012_challenge_label_map_proto.pbtxt.""")
+        'model_dir', '/tmp/imagenet',
+        """Path to classify_image_graph_def.pb, """
+        """imagenet_synset_to_human_label_map.txt, and """
+        """imagenet_2012_challenge_label_map_proto.pbtxt.""")
 tf.app.flags.DEFINE_string('image_file', '',
                            """Absolute path to image file.""")
 tf.app.flags.DEFINE_integer('num_top_predictions', 5,
@@ -78,10 +79,10 @@ class NodeLookup(object):
                  uid_lookup_path=None):
         if not label_lookup_path:
             label_lookup_path = os.path.join(
-                FLAGS.model_dir, 'imagenet_2012_challenge_label_map_proto.pbtxt')
+                    FLAGS.model_dir, 'imagenet_2012_challenge_label_map_proto.pbtxt')
         if not uid_lookup_path:
             uid_lookup_path = os.path.join(
-                FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
+                    FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
         self.node_lookup = self.load(label_lookup_path, uid_lookup_path)
 
     def load(self, label_lookup_path, uid_lookup_path):
@@ -152,7 +153,7 @@ def run_inference_on_image(image):
       image: Image file name.
 
     Returns:
-      A json object of human readable predictions.
+      Nothing
     """
     if not gfile.Exists(image):
         tf.logging.fatal('File does not exist %s', image)
@@ -184,6 +185,7 @@ def run_inference_on_image(image):
             human_string = node_lookup.id_to_string(node_id)
             score = predictions[node_id]
             human_results[human_string] = float("%.5f" % score)
+        pp.pprint(human_results)
     return human_results
 
 

@@ -1,6 +1,7 @@
-#!flask/bin/python
+
+
 from flask import Flask, abort
-from flask.ext.restful import Api, Resource, reqparse, fields, marshal
+from flask_restful import Api, Resource, reqparse
 import os
 import classify
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -25,6 +26,7 @@ class ImageAPI(Resource):
         url = args['url']
         # Read the image and save it
         path = read_image_from_url(url)
+        print "Image Downloaded to: " + path
         # Run the classifier on the image
         results = classify.run(path)
         # Remove the image after analyzing
