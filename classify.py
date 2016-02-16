@@ -30,18 +30,22 @@ to use this script to perform image recognition.
 
 https://tensorflow.org/tutorials/image_recognition/
 """
-# !/usr/bin/python2
 
-import pprint as pp
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os.path
 import re
 import sys
 import tarfile
 
 # pylint: disable=unused-import,g-bad-import-order
-from moves import urllib
+import tensorflow.python.platform
+from six.moves import urllib
 import numpy as np
 import tensorflow as tf
+import pprint as pp
 # pylint: enable=unused-import,g-bad-import-order
 
 from tensorflow.python.platform import gfile
